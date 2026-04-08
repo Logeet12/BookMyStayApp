@@ -1,28 +1,28 @@
-import java.util.HashMap;
-import java.util.Map;
-
 public class main {
 
     public static void main(String[] args) {
 
-        // Create Inventory
-        RoomInventory inventory = new RoomInventory();
+        // Create Booking Queue
+        BookingRequestQueue bookingQueue = new BookingRequestQueue();
 
-        // Set availability
-        inventory.setAvailability("Single", 5);
-        inventory.setAvailability("Double", 0);
-        inventory.setAvailability("Suite", 2);
+        // Simulate multiple guest requests (arrival order matters)
+        Reservation r1 = new Reservation("Alice", "Single");
+        Reservation r2 = new Reservation("Bob", "Suite");
+        Reservation r3 = new Reservation("Charlie", "Single");
 
-        // Create Room Catalog (Domain objects)
-        Map<String, Room> roomCatalog = new HashMap<>();
-        roomCatalog.put("Single", new Room("Single", 2000, "WiFi, TV"));
-        roomCatalog.put("Double", new Room("Double", 3500, "WiFi, TV, AC"));
-        roomCatalog.put("Suite", new Room("Suite", 7000, "WiFi, TV, AC, Mini Bar"));
+        // Add requests to queue (FIFO order maintained)
+        bookingQueue.addRequest(r1);
+        bookingQueue.addRequest(r2);
+        bookingQueue.addRequest(r3);
 
-        // Search Service
-        SearchService searchService = new SearchService();
+        // Display queue
+        bookingQueue.displayQueue();
 
-        // Guest searches for rooms
-        searchService.searchAvailableRooms(inventory, roomCatalog);
+        // Peek next request (no removal)
+        System.out.println("\nNext request to process:");
+        Reservation next = bookingQueue.peekNextRequest();
+        if (next != null) {
+            next.display();
+        }
     }
 }
