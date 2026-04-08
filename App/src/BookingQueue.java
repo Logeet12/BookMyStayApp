@@ -7,13 +7,13 @@ class BookingQueue {
 
     public synchronized void addRequest(BookingRequest request) {
         queue.add(request);
-        notify(); // wake up waiting threads
+        notify();
     }
 
     public synchronized BookingRequest getRequest() {
         while (queue.isEmpty()) {
             try {
-                wait(); // wait for new requests
+                wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
