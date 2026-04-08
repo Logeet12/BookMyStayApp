@@ -1,5 +1,5 @@
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 public class RoomInventory {
 
@@ -9,11 +9,11 @@ public class RoomInventory {
         availability.put(roomType, count);
     }
 
-    public int getAvailability(String roomType) {   // fixes error #4
+    public int getAvailability(String roomType) {
         return availability.getOrDefault(roomType, 0);
     }
 
-    public void decrementRoom(String roomType) {    // fixes error #5
+    public void decrementRoom(String roomType) {
         int count = getAvailability(roomType);
         if (count > 0) {
             availability.put(roomType, count - 1);
