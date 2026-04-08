@@ -2,23 +2,29 @@ public class main {
 
     public static void main(String[] args) {
 
-        // Assume this ID came from Use Case 6 (allocation)
-        String reservationId = "SI-AB123";
+        // Inventory
+        RoomInventory inventory = new RoomInventory();
+        inventory.setAvailability("Single", 2);
+        inventory.setAvailability("Suite", 1);
 
-        // Create services
-        AddOnService breakfast = new AddOnService("Breakfast", 500);
-        AddOnService wifi = new AddOnService("Premium WiFi", 300);
-        AddOnService airportPickup = new AddOnService("Airport Pickup", 1000);
+        // Queue
+        BookingRequestQueue queue = new BookingRequestQueue();
+        queue.addRequest(new Reservation(null, "Alice", "Single"));
+        queue.addRequest(new Reservation(null, "Bob", "Suite"));
+        queue.addRequest(new Reservation(null, "Charlie", "Single"));
 
-        // Manager
-        AddOnServiceManager manager = new AddOnServiceManager();
+        // History + Service
+        BookingHistory history = new BookingHistory();
+        BookingService bookingService = new BookingService();
 
-        // Guest selects services
-        manager.addService(reservationId, breakfast);
-        manager.addService(reservationId, wifi);
-        manager.addService(reservationId, airportPickup);
+        // Process bookings
+        bookingService.processBookings(queue, inventory, history);
 
-        // Display selected services
-        manager.displayServices(reservationId);
+        // Reporting
+        BookingReportService reportService = new BookingReportService();
+
+        reportService.displayAllBookings(history);
+        reportService.generateSummaryReport(history);
+        reportService.totalBookings(history);
     }
 }
