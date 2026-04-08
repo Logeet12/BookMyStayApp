@@ -2,27 +2,26 @@ public class main {
 
     public static void main(String[] args) {
 
-        // Create Booking Queue
-        BookingRequestQueue bookingQueue = new BookingRequestQueue();
+        // Inventory setup
+        RoomInventory inventory = new RoomInventory();
+        inventory.setAvailability("Single", 2);
+        inventory.setAvailability("Suite", 1);
 
-        // Simulate multiple guest requests (arrival order matters)
-        Reservation r1 = new Reservation("Alice", "Single");
-        Reservation r2 = new Reservation("Bob", "Suite");
-        Reservation r3 = new Reservation("Charlie", "Single");
+        // Queue setup
+        BookingRequestQueue queue = new BookingRequestQueue();
 
-        // Add requests to queue (FIFO order maintained)
-        bookingQueue.addRequest(r1);
-        bookingQueue.addRequest(r2);
-        bookingQueue.addRequest(r3);
+        queue.addRequest(new Reservation("Alice", "Single"));
+        queue.addRequest(new Reservation("Bob", "Suite"));
+        queue.addRequest(new Reservation("Charlie", "Single"));
+        queue.addRequest(new Reservation("David", "Single")); // Should fail
 
-        // Display queue
-        bookingQueue.displayQueue();
+        // Booking service
+        BookingService service = new BookingService();
 
-        // Peek next request (no removal)
-        System.out.println("\nNext request to process:");
-        Reservation next = bookingQueue.peekNextRequest();
-        if (next != null) {
-            next.display();
-        }
+        // Process all bookings
+        service.processBookings(queue, inventory);
+
+        // Display results
+        service.displayAllocations();
     }
 }
