@@ -1,4 +1,5 @@
 class BookingRequest {
+
     private String guestName;
     private String roomType;
 
