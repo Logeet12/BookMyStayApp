@@ -1,30 +1,37 @@
+import java.util.*;
+
 public class main {
 
     public static void main(String[] args) {
 
         // Inventory
         RoomInventory inventory = new RoomInventory();
-        inventory.setAvailability("Single", 2);
+        inventory.setAvailability("Single", 1);
         inventory.setAvailability("Suite", 1);
+
+        // Valid room types
+        Set<String> validTypes = new HashSet<>();
+        validTypes.add("Single");
+        validTypes.add("Suite");
+
+        // Validator
+        BookingValidator validator = new BookingValidator(validTypes);
 
         // Queue
         BookingRequestQueue queue = new BookingRequestQueue();
-        queue.addRequest(new Reservation(null, "Alice", "Single"));
-        queue.addRequest(new Reservation(null, "Bob", "Suite"));
-        queue.addRequest(new Reservation(null, "Charlie", "Single"));
 
-        // History + Service
+        // Test cases
+        queue.addRequest(new Reservation(null, "Alice", "Single")); // valid
+        queue.addRequest(new Reservation(null, "", "Suite"));       // invalid name
+        queue.addRequest(new Reservation(null, "Bob", "Deluxe"));   // invalid type
+        queue.addRequest(new Reservation(null, "Charlie", "Single")); // no availability
+
+        // History
         BookingHistory history = new BookingHistory();
-        BookingService bookingService = new BookingService();
 
-        // Process bookings
-        bookingService.processBookings(queue, inventory, history);
+        // Service
+        BookingService service = new BookingService(validator);
 
-        // Reporting
-        BookingReportService reportService = new BookingReportService();
-
-        reportService.displayAllBookings(history);
-        reportService.generateSummaryReport(history);
-        reportService.totalBookings(history);
+        service.processBookings(queue, inventory, history);
     }
 }

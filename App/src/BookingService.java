@@ -2,7 +2,12 @@ import java.util.*;
 
 class BookingService {
 
-    private Set<String> allocatedRoomIds = new HashSet<>();
+    private final Set<String> allocatedRoomIds = new HashSet<>();
+    private BookingValidator validator;
+
+    public BookingService(BookingValidator validator) {
+        this.validator = validator;
+    }
 
     public void processBookings(BookingRequestQueue queue,
                                 RoomInventory inventory,
@@ -12,23 +17,26 @@ class BookingService {
             Reservation request = queue.getNextRequest();
 
             if (request == null) {
+                System.out.println("\nAll requests processed.");
                 break;
             }
 
-            String roomType = request.getRoomType();
+            try {
+                // ✅ FAIL-FAST VALIDATION
+                validator.validate(request, inventory);
 
-            if (inventory.getAvailability(roomType) > 0) {
+                String roomType = request.getRoomType();
 
-                // Generate ID
+                // Generate unique ID
                 String roomId = generateRoomId(roomType);
 
                 if (allocatedRoomIds.contains(roomId)) {
-                    continue;
+                    throw new InvalidBookingException("Duplicate Room ID generated");
                 }
 
                 allocatedRoomIds.add(roomId);
 
-                // Update inventory
+                // Safe inventory update
                 inventory.decrementRoom(roomType);
 
                 // Create confirmed reservation
@@ -38,13 +46,13 @@ class BookingService {
                         roomType
                 );
 
-                // Store in history
                 history.addReservation(confirmed);
 
-                System.out.println("CONFIRMED: " + confirmed.getReservationId());
+                System.out.println("✅ CONFIRMED: " + roomId + " for " + request.getGuestName());
 
-            } else {
-                System.out.println("FAILED: " + request.getGuestName());
+            } catch (InvalidBookingException e) {
+                // ✅ GRACEFUL FAILURE
+                System.out.println("❌ BOOKING FAILED: " + e.getMessage());
             }
         }
     }

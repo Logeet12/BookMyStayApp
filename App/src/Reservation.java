@@ -21,11 +21,4 @@ public class Reservation {
     public String getRoomType() {
         return roomType;
     }
-
-
-    public void display() {
-        System.out.println("ID: " + reservationId +
-                " | Guest: " + guestName +
-                " | Room: " + roomType);
-    }
 }
