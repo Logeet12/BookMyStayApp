@@ -1,33 +1,21 @@
 public class main {
+
     public static void main(String[] args) {
 
         RoomInventory inventory = new RoomInventory();
-        inventory.addRoomType("Deluxe", 2);
-        inventory.addRoomType("Standard", 3);
+        BookingQueue queue = new BookingQueue();
 
-        BookingManager manager = new BookingManager(inventory);
+        // Create multiple threads (processors)
+        BookingProcessor t1 = new BookingProcessor("Thread-1", queue, inventory);
+        BookingProcessor t2 = new BookingProcessor("Thread-2", queue, inventory);
 
-        // Create bookings
-        Booking b1 = new Booking("B101", "Deluxe", "D1");
-        Booking b2 = new Booking("B102", "Standard", "S1");
+        t1.start();
+        t2.start();
 
-        manager.addBooking(b1);
-        manager.addBooking(b2);
-
-        // Simulate allocations
-        inventory.allocateRoom("Deluxe", "D1");
-        inventory.allocateRoom("Standard", "S1");
-
-        inventory.showInventory();
-
-        // Cancel booking
-        manager.cancelBooking("B101");
-
-        inventory.showInventory();
-        inventory.showRollbackStack();
-
-        // Try invalid cancellation
-        manager.cancelBooking("B101"); // already cancelled
-        manager.cancelBooking("B999"); // non-existent
+        // Simulate multiple guests booking simultaneously
+        queue.addRequest(new BookingRequest("Guest A", "Deluxe"));
+        queue.addRequest(new BookingRequest("Guest B", "Deluxe"));
+        queue.addRequest(new BookingRequest("Guest C", "Standard"));
+        queue.addRequest(new BookingRequest("Guest D", "Standard"));
     }
 }

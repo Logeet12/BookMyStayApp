@@ -1,49 +1,34 @@
 import java.util.HashMap;
-import java.util.Stack;
 
 class RoomInventory {
 
     private final HashMap<String, Integer> inventory = new HashMap<>();
-    private final Stack<String> rollbackStack = new Stack<>();
 
-    // Add room types with initial count
-    public void addRoomType(String type, int count) {
-        inventory.put(type, count);
+    public RoomInventory() {
+        inventory.put("Deluxe", 1);   // small number to show conflict
+        inventory.put("Standard", 2);
     }
 
-    // Check availability
-    public boolean isAvailable(String type) {
-        return inventory.getOrDefault(type, 0) > 0;
-    }
+    // 🔐 Critical Section
+    public synchronized boolean allocateRoom(String roomType) {
 
-    // Allocate room (during booking)
-    public void allocateRoom(String type, String roomId) {
-        if (!isAvailable(type)) {
-            System.out.println("No rooms available for type: " + type);
-            return;
+        int available = inventory.getOrDefault(roomType, 0);
+
+        if (available > 0) {
+            System.out.println(Thread.currentThread().getName()
+                    + " allocating " + roomType);
+
+            // simulate delay (race condition scenario)
+            try { Thread.sleep(100); } catch (InterruptedException e) {}
+
+            inventory.put(roomType, available - 1);
+            return true;
         }
 
-        inventory.put(type, inventory.get(type) - 1);
-        rollbackStack.push(roomId);
-
-        System.out.println("Room allocated: " + roomId);
+        return false;
     }
 
-    // ✅ REQUIRED METHOD (Fix for your error)
-    public void releaseRoom(String type, String roomId) {
-        inventory.put(type, inventory.getOrDefault(type, 0) + 1);
-        rollbackStack.push(roomId);
-
-        System.out.println("Room released (rollback): " + roomId);
-    }
-
-    // Display inventory
     public void showInventory() {
-        System.out.println("Current Inventory: " + inventory);
-    }
-
-    // Display rollback stack
-    public void showRollbackStack() {
-        System.out.println("Rollback Stack: " + rollbackStack);
+        System.out.println("Final Inventory: " + inventory);
     }
 }
